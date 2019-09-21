@@ -10,7 +10,7 @@ struct name{
 };
 
 struct date{
-    int DD;
+    int DD ;
     int MM;
     int YYYY;
 };
