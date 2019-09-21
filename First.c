@@ -128,24 +128,73 @@ struct data *insert(struct data *head){
     }
 }
 
+void displayUsers(struct data *head){
+    struct data *temp=head;
+    printf("FName\tLname\tBDate\t\tUname\t\tPassword   \t\tGender\n______________________________________________________________________________________________\n");
+    while(temp!=NULL){
+        printf("%s\t%s\t%d-%d-%d\t%s\t\t%s\t\t%s\n",temp->fullname.fname,temp->fullname.lname,temp->bdate.DD,temp->bdate.MM,temp->bdate.YYYY,temp->uname,temp->password,temp->gender);
+        temp=temp->next;
+        }
+}
 
-
-
-void adminDisplay(struct data *head){
-    int pass;
-    struct data *temp;
-    printf("Enter Admin Password:\n");
-    scanf("%d",&pass);
-    temp=head;
-    if(pass==12345 || pass ==67890){
-        printf("Password Accepted\n");
-        printf("FName\tLname\tBDate\t\tUname\t\tPassword   \t\tGender\n______________________________________________________________________________________________\n");
-        while(temp!=NULL){
-            printf("%s\t%s\t%d-%d-%d\t%s\t\t%s\t\t%s\n",temp->fullname.fname,temp->fullname.lname,temp->bdate.DD,temp->bdate.MM,temp->bdate.YYYY,temp->uname,temp->password,temp->gender);
+struct data *removeUser(struct data *head){             //remove user access to the admin
+    struct data *temp,*temp1;
+    char uname[10];
+    printf("Enter Uname to delete\n");
+    scanf("%s",uname);
+    if(head->uname=uname){
+        temp=head;
+        free(temp);
+        head=head->next;
+        printf("Removed %s\n",uname);
+        return head;
+    }
+    else if(head->next != NULL){
+        temp=head;
+        while(strcmp(uname,temp->uname)!=0){
+            printf("Loop Start");
+            temp1=temp;
             temp=temp->next;
         }
+        printf("Loop End");
+        temp1->next=temp->next;
+        free(temp);
+        printf("Removed %s\n",uname);
+
+        return head;
+    }
+    else{
+        printf("Cannot Find %s",uname);
     }
 }
+
+
+
+struct data *adminDisplay(struct data *head){
+    int pass;
+    printf("Enter Admin Password:\n");
+    scanf("%d",&pass);
+    if(pass==12345 || pass ==67890){
+        printf("Password Accepted\n");
+        int ch=1;
+        while(ch!=0){
+            printf("Enter Choice\n1:DisplayList\n2:RemoveUser");
+            scanf("%d",&ch);
+            switch(ch){
+                case 1:
+                    displayUsers(head);
+                    break;
+                case 2:
+                    head=removeUser(head);
+                    break;
+                default:
+                    printf("Goodbye Admin\n");
+            }
+        }
+    }
+    return head;
+}
+
 
 void main(){
     int ch;
@@ -161,6 +210,9 @@ void main(){
         case 2:
             adminDisplay(head);
             break;
+//        case 3:
+//            login(head);
+//            break;
         case 5:
             printf("Thank you for Using Us.....Have a Nice Day;-)\n");
             exit(0);
