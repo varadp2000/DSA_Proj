@@ -23,7 +23,7 @@ struct messages{
 struct data{
     struct name fullname;
     struct date bdate;
-    char uname[10];
+    char *uname;
     char gender[1];
     struct messages gotmessage[100];
     char *password;
@@ -38,26 +38,29 @@ struct data *create(){
 //    newnode->next=NULL;
     return newnode;
 }
+
+//char pass1[50];
+
 char *passSet(){
-    char pass[50],*e;
-    printf("Enter Password\nAtLeast 8char,1Uppercase,Digit and Lowercase\n");
-    scanf("%s",&pass);
-    printf("%s\n",pass);
-    printf("%d",strlen(pass));
-    int a=0,b=0,c=0,i;
+    char pass[50]="\0";
+    char *e=NULL;
+    printf("Enter Password\nPassword Should Be AtLeast 8 charecter long and must contain 1 Uppercase,Digit and Special Char\n");
+    scanf("%s",pass);
+    e=(char *)malloc(sizeof(strlen(pass)+1));
+    int a=0,b=0,c=0,d=0,i;
     for(i=0;i<strlen(pass);i++){
-        printf("%c\t",pass[i]);
         if(isdigit(pass[i]))
             a++;
-        if(isupper(pass[i]))
+        else if(isupper(pass[i]))
             b++;
-        if(islower(pass[i]))
+        else if(islower(pass[i]))
             c++;
+        else
+            d++;
     }
-    printf("%d  %d  %d  %d\n",a,b,c,a+b+c);
-    if(a+b+c > 8 && (a>0 && (b>0||c>0) )){
-        *e=&pass;
-        return a;
+    if(a+b+c+d >= 8 && (a>0 && b>0 && c>0 && d>0 )){
+      strcpy(e,pass);
+      return e;
     }
     else{
         printf("Invalid Pass\n");
@@ -65,22 +68,42 @@ char *passSet(){
     }
 }
 
-struct data *new_user(struct data *newnode){
+char *usname(struct data *head){
+    struct data *temp;
+    char unn[10]="\0";
+    char *un=NULL;
+    un=(char *)malloc(sizeof(char)*10);
+    int flag=0;
+    temp=head;
+    printf("Select Uname\n");
+    scanf("%s",unn);
+    while(temp!=NULL){
+    if(strcmp(temp->uname,unn)==0)
+        flag=1;
+        temp=temp->next;
+    }
+    if(flag==1){
+        printf("Username Already taken\n");
+        return usname(head);
+    }
+    else if(flag==0){
+        strcpy(un,unn);
+        return un;
+    }
+}
+
+struct data *new_user(struct data *newnode,struct data *head){
     char *pass;
-    printf("Welcome to ______________\nPlease Enter Your Data\n");
+    printf("Please Enter Your Data\n");
     printf("Enter First and Last Name\n");
     scanf("%s%s",newnode->fullname.fname,newnode->fullname.lname);
     printf("Enter birthdate DD MM YYYY\n");
     scanf("%d%d%d",&newnode->bdate.DD,&newnode->bdate.MM,&newnode->bdate.YYYY);
-//    printf("Enter Password\n");
-//    scanf("%s",newnode->password);
-    pass=passSet();
-    newnode->password=pass;
+    newnode->password=passSet();
     printf("Enter Gender[M/F]\n");
     scanf("%s",newnode->gender);
-    printf("Enter Username\n");
-    scanf("%s",newnode->uname);
-
+    newnode->uname="\0";
+    newnode->uname=usname(head);
     return newnode;
 }
 
@@ -90,14 +113,14 @@ struct data *insert(struct data *head){
     temp=head;
     if(head==NULL){
         head=create();
-        head=new_user(head);
+        head=new_user(head,head);
         head->next=NULL;
         return head;
         }
     else{
         while(temp->next!=NULL)
             temp=temp->next;
-        newnode=new_user(newnode);
+        newnode=new_user(newnode,head);
         temp->next=newnode;
         newnode->next=NULL;
 
@@ -108,24 +131,6 @@ struct data *insert(struct data *head){
 
 
 
-/*
-char *uname(){
-    struct data *temp;
-    char uname[10];
-    temp=head;
-    printf("Select Uname");
-    scanf("%s",un);
-    while(temp!=NULL){
-    if(temp->uname==un){
-        printf("Invalid uname");
-        return uname();
-    }
-    else
-        return un;
-        temp=temp->next;
-    }
-}
-*/
 void adminDisplay(struct data *head){
     int pass;
     struct data *temp;
@@ -134,7 +139,7 @@ void adminDisplay(struct data *head){
     temp=head;
     if(pass==12345 || pass ==67890){
         printf("Password Accepted\n");
-        printf("FName\tLname\tBDate\t\tUname\t\tPass\t\tGender\n_________________________________________________________________\n");
+        printf("FName\tLname\tBDate\t\tUname\t\tPassword   \t\tGender\n______________________________________________________________________________________________\n");
         while(temp!=NULL){
             printf("%s\t%s\t%d-%d-%d\t%s\t\t%s\t\t%s\n",temp->fullname.fname,temp->fullname.lname,temp->bdate.DD,temp->bdate.MM,temp->bdate.YYYY,temp->uname,temp->password,temp->gender);
             temp=temp->next;
@@ -145,9 +150,9 @@ void adminDisplay(struct data *head){
 void main(){
     int ch;
     struct data *head=NULL;
-    printf("Before Loop\n");
+    printf("Welcome to SocialNetwork\n");
     while(ch != 5){
-        printf("Loop Started\n");
+        printf("Enter Your Choice\n1:Enter Data\n2:AdminPanel\n5:Exit\n");
     scanf("%d",&ch);
         switch (ch){
         case 1:
@@ -157,13 +162,11 @@ void main(){
             adminDisplay(head);
             break;
         case 5:
+            printf("Thank you for Using Us.....Have a Nice Day;-)\n");
             exit(0);
+            break;
+        default:
+            printf("Select Proper Choice");
         }
     }
 }
-
-
-
-
-
-
