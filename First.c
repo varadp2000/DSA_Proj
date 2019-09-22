@@ -142,6 +142,42 @@ void adminDisplay(struct data *head){
     }
 }
 
+void remove_user(struct data *head){             //remove user access to the admin
+    struct data* tmp=head;
+    struct data* tmp1;
+    char name[20];
+    printf("Enter the first name of the user to remove them..\n");
+    scanf("%s",name);
+    while(tmp->fullname.fname!=name){
+      tmp=tmp->next;
+    }
+     while(tmp1->next!=tmp){
+       tmp1=tmp1->next;
+     }
+     tmp1->next=tmp->next;
+     free(tmp);
+     printf("The user %s was removed.\n",name);
+}
+
+void Login_Attempt(struct data *head){             //Login function to check if the user exists.
+  char user[20];
+  struct data * tmp=head;
+  printf("Enter firstname \n");
+  gets(firstname);
+  printf("Enter password\n");
+  gets(password);
+   while(tmp->next!=NULL){
+     if(tmp->firstname==firstname&&tmp->password==password){
+       printf("Welcome %s\n",firstname);
+     }
+     else{
+       printf("Invalid username or password\n");
+       Login_Attempt(head);
+     }
+   }
+}
+
+
 void main(){
     int ch;
     struct data *head=NULL;
@@ -161,9 +197,3 @@ void main(){
         }
     }
 }
-
-
-
-
-
-
