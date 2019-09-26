@@ -44,7 +44,7 @@ struct data *create(){
 char *passSet(){
     char pass[50]="\0";
     char *e=NULL;
-    printf("Enter Password\nPassword Should Be AtLeast 8 charecter long and must contain 1 Uppercase,Digit and Special Char\n");
+    printf("Enter Password\nPassword Should Be AtLeast 8 charecter long and must contain 1 Uppercase,Digit and Special Char AND CANNOT HAVE SPACES\n");
     scanf("%s",pass);
     e=(char *)malloc(sizeof(strlen(pass)+1));
     int a=0,b=0,c=0,d=0,i;
@@ -70,7 +70,7 @@ char *passSet(){
 
 char *usname(struct data *head){
     struct data *temp;
-    char unn[10]="\0";
+    char unn[10];
     char *un=NULL;
     un=(char *)malloc(sizeof(char)*10);
     int flag=0;
@@ -102,10 +102,11 @@ struct data *new_user(struct data *newnode,struct data *head){
     newnode->password=passSet();
     printf("Enter Gender[M/F]\n");
     scanf("%s",newnode->gender);
-    newnode->uname="\0";
+    newnode->uname;
     newnode->uname=usname(head);
     return newnode;
 }
+
 
 struct data *insert(struct data *head){
     struct data *newnode,*temp;
@@ -142,30 +143,34 @@ struct data *removeUser(struct data *head){             //remove user access to 
     char uname[10];
     printf("Enter Uname to delete\n");
     scanf("%s",uname);
-    if(head->uname=uname){
-        temp=head;
-        free(temp);
+    temp=head;
+    if(temp==NULL){
+      printf("Username does not exist.\n");
+    }
+    else if(temp->uname=uname){
         head=head->next;
+        temp->next=NULL;
+        free(temp);
         printf("Removed %s\n",uname);
         return head;
     }
-    else if(head->next != NULL){
-        temp=head;
+    else if(temp->next != NULL){
         while(strcmp(uname,temp->uname)!=0){
             printf("Loop Start");
             temp1=temp;
             temp=temp->next;
         }
-        printf("Loop End");
-        temp1->next=temp->next;
-        free(temp);
-        printf("Removed %s\n",uname);
-
-        return head;
-    }
+        if(temp->uname==uname){
+          printf("Loop End");
+          temp1->next=temp->next;
+          free(temp);
+          printf("Removed %s\n",uname);
+          return head;
+        }
     else{
         printf("Cannot Find %s",uname);
     }
+}
 }
 
 
@@ -191,17 +196,21 @@ struct data *adminDisplay(struct data *head){
                     printf("Goodbye Admin\n");
             }
         }
+    }else{
+      printf("Invalid password\n" );
+      adminDisplay(head);
     }
     return head;
 }
 
 
+
 void main(){
     int ch;
     struct data *head=NULL;
-    printf("Welcome to SocialNetwork\n");
+    printf("Welcome to HV's Social Media App.\n");
     while(ch != 5){
-        printf("Enter Your Choice\n1:Enter Data\n2:AdminPanel\n5:Exit\n");
+        printf("Enter Your Choice\n1:Register\n2:AdminPanel\n5:Exit\n");
     scanf("%d",&ch);
         switch (ch){
         case 1:
