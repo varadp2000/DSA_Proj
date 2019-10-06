@@ -1,233 +1,235 @@
+//DSA Project - HV's Social Media App.
 #include<stdio.h>
 #include<stdlib.h>
 #include<conio.h>
-#include<ctype.h>
 #include<string.h>
+#include<ctype.h>
 
-struct name{
-    char fname[10];
-    char lname[10];
+
+struct users{
+  char fName[20];
+  char lName[20];
+  char username[20];
+  char bdate[10];
+  char password[20];
+  struct users * next;
 };
 
-struct date{
-    int DD ;
-    int MM;
-    int YYYY;
+struct posts{
+  char post[100];
+  char userName[20];
+  struct posts * next;
 };
 
-struct messages{
-    char username[10];
-    char message[100];
-};
-
-struct data{
-    struct name fullname;
-    struct date bdate;
-    char *uname;
-    char gender[1];
-    struct messages gotmessage[100];
-    char *password;
-    struct data *next;
-};
-
-
-struct data *create(){
-    struct data *newnode;
-    newnode=(struct data *)malloc(sizeof(struct data));
-//    newnode=NULL;
-//    newnode->next=NULL;
-    return newnode;
+struct users * create_node(){
+    struct users * newusers;
+    newusers=(struct users *)malloc(sizeof(struct users));
+    newusers->next=NULL;
+    return newusers;
 }
 
-//char pass1[50];
-
-char *passSet(){
-    char pass[50]="\0";
-    char *e=NULL;
-    printf("Enter Password\nPassword Should Be AtLeast 8 charecter long and must contain 1 Uppercase,Digit and Special Char AND CANNOT HAVE SPACES\n");
-    scanf("%s",pass);
-    e=(char *)malloc(sizeof(strlen(pass)+1));
-    int a=0,b=0,c=0,d=0,i;
-    for(i=0;i<strlen(pass);i++){
-        if(isdigit(pass[i]))
-            a++;
-        else if(isupper(pass[i]))
-            b++;
-        else if(islower(pass[i]))
-            c++;
-        else
-            d++;
-    }
-    if(a+b+c+d >= 8 && (a>0 && b>0 && c>0 && d>0 )){
-      strcpy(e,pass);
-      return e;
-    }
-    else{
-        printf("Invalid Pass\n");
-        return passSet();
-    }
-}
-
-char *usname(struct data *head){
-    struct data *temp;
-    char unn[10];
-    char *un=NULL;
-    un=(char *)malloc(sizeof(char)*10);
-    int flag=0;
-    temp=head;
-    printf("Select Uname\n");
-    scanf("%s",unn);
-    while(temp!=NULL){
-    if(strcmp(temp->uname,unn)==0)
-        flag=1;
-        temp=temp->next;
-    }
-    if(flag==1){
-        printf("Username Already taken\n");
-        return usname(head);
-    }
-    else if(flag==0){
-        strcpy(un,unn);
-        return un;
-    }
-}
-
-struct data *new_user(struct data *newnode,struct data *head){
-    char *pass;
-    printf("Please Enter Your Data\n");
-    printf("Enter First and Last Name\n");
-    scanf("%s%s",newnode->fullname.fname,newnode->fullname.lname);
-    printf("Enter birthdate DD MM YYYY\n");
-    scanf("%d%d%d",&newnode->bdate.DD,&newnode->bdate.MM,&newnode->bdate.YYYY);
-    newnode->password=passSet();
-    printf("Enter Gender[M/F]\n");
-    scanf("%s",newnode->gender);
-    newnode->uname;
-    newnode->uname=usname(head);
-    return newnode;
+struct posts * create_post(){
+    struct posts * newpost;
+    newpost=(struct posts *)malloc(sizeof(struct posts));
+    newpost->next=NULL;
+    return newpost;
 }
 
 
-struct data *insert(struct data *head){
-    struct data *newnode,*temp;
-    newnode=create();
-    temp=head;
-    if(head==NULL){
-        head=create();
-        head=new_user(head,head);
-        head->next=NULL;
-        return head;
-        }
-    else{
-        while(temp->next!=NULL)
-            temp=temp->next;
-        newnode=new_user(newnode,head);
-        temp->next=newnode;
-        newnode->next=NULL;
-
-        return head;
-    }
-}
-
-void displayUsers(struct data *head){
-    struct data *temp=head;
-    printf("FName\tLname\tBDate\t\tUname\t\tPassword   \t\tGender\n______________________________________________________________________________________________\n");
-    while(temp!=NULL){
-        printf("%s\t%s\t%d-%d-%d\t%s\t\t%s\t\t%s\n",temp->fullname.fname,temp->fullname.lname,temp->bdate.DD,temp->bdate.MM,temp->bdate.YYYY,temp->uname,temp->password,temp->gender);
-        temp=temp->next;
-        }
-}
-
-struct data *removeUser(struct data *head){             //remove user access to the admin
-    struct data *temp,*temp1;
-    char uname[10];
-    printf("Enter Uname to delete\n");
-    scanf("%s",uname);
-    temp=head;
-    if(temp==NULL){
-      printf("Username does not exist.\n");
-    }
-    else if(temp->uname=uname){
-        head=head->next;
-        temp->next=NULL;
-        free(temp);
-        printf("Removed %s\n",uname);
-        return head;
-    }
-    else if(temp->next != NULL){
-        while(strcmp(uname,temp->uname)!=0){
-            printf("Loop Start");
-            temp1=temp;
-            temp=temp->next;
-        }
-        if(temp->uname==uname){
-          printf("Loop End");
-          temp1->next=temp->next;
-          free(temp);
-          printf("Removed %s\n",uname);
-          return head;
-        }
-    else{
-        printf("Cannot Find %s",uname);
-    }
-}
-}
-
-
-
-struct data *adminDisplay(struct data *head){
-    int pass;
-    printf("Enter Admin Password:\n");
-    scanf("%d",&pass);
-    if(pass==12345 || pass ==67890){
-        printf("Password Accepted\n");
-        int ch=1;
-        while(ch!=0){
-            printf("Enter Choice\n1:DisplayList\n2:RemoveUser");
-            scanf("%d",&ch);
-            switch(ch){
-                case 1:
-                    displayUsers(head);
-                    break;
-                case 2:
-                    head=removeUser(head);
-                    break;
-                default:
-                    printf("Goodbye Admin\n");
-            }
-        }
-    }else{
-      printf("Invalid password\n" );
-      adminDisplay(head);
-    }
+struct users * register_user(struct users * head){
+  struct users * tmp;
+  tmp=head;
+  if(head==NULL){
+    head=create_node();
+    puts("Enter Firstname");
+    scanf("%s",&head->fName);
+    puts("Enter Lastname");
+    scanf("%s",&head->lName);             //register user when head null
+    puts("Enter username");
+    scanf("%s",&head->username);
+    puts("Enter password");
+    scanf("%s",&head->password);
     return head;
+  }
+  else{
+  while(tmp->next!=NULL)
+    tmp=tmp->next;
+    tmp->next=create_node();
+    tmp=tmp->next;                          //register user when one or more users exists.
+    puts("Enter Firstname");
+    scanf("%s",&tmp->fName);
+    puts("Enter Lastname");
+    scanf("%s",&tmp->lName);
+    puts("Enter username (Make Sure it does not already exist.)");
+    scanf("%s",&tmp->username);
+    puts("Enter a strong password.");
+    scanf("%s",&tmp->password);
+      return head;
+ }
 }
 
 
+struct users * admin_login(struct users * head){          //admin login
+    char pass[20];
+    char actual[]="12345";
+    struct users * tmp,*tmp2;
+    struct users * tmp1=head;
+    struct users * tmp3=head;
+    tmp=head;
+    puts("Enter Password");
+    scanf("%s",&pass);
+    if(strcmp(pass,actual)==0){
+      puts("Reached");
+        puts("FirstName\t\t\tLastname\t\t\tUsername\n___________________________________________________________________________");
+        while(tmp!=NULL){
+          printf("%s\t\t\t\t%s\t\t\t\t%s",tmp->fName,tmp->lName,tmp->username);
+          puts("\n");
+          tmp=tmp->next;
+        }
+        puts("Press 1 to remove a user / 0 to cancel menu");
+        int i;
+        scanf("%d",&i);
+        if(i==1){
+          puts("Enter username to remove their account.");
+          char user[20];
+          scanf("%s",&user);
+          int flag=0;
+              if(head==NULL){
+                puts("No users exist.");
+              }else if(head->next==NULL){
+                if(strcmp(user,head->username)==0){           //found user to remove
+                  printf("Removed user: %s",head->username); //user at head and ll has only one node
+                  free(head);
+                  flag=1;
+                  head=create_node();
+                   puts(" \n Need atleast one user. Enter default fname , lname , username and password");
+                   scanf("%s %s %s %s",head->fName,head->lName,head->username,head->password);
+                }
+              }else if(head->next!=NULL && strcmp(user,head->username)==0 ){
+                printf("Removed user: %s",head->username);       //user at head but ll has more than one nodes
+                struct users * tmp2;
+                tmp2=head;
+                head=head->next;
+                tmp2->next=NULL;
+                flag=1;
+                free(tmp2);
+              }else{
+               while(tmp3->next!=NULL){     //found user to remove in ll
+                 tmp3=tmp3->next;
+                 if(strcmp(user,tmp3->username)==0){
+                     puts("found user");
+                     printf("Removed user: %s",tmp3->username);    //remove user at tmp
+                     while(tmp1->next!=tmp3)
+                        tmp1=tmp1->next;
+                     tmp1->next=tmp3->next;
+                     tmp3->next=NULL;
+                     flag=1;
+                     free(tmp3);
+                     break;
+                   }
+                 }
+            }if(flag==0){
+              puts("User not Found");
+            }
+          }
+        }
+  return head;
+}
+
+
+struct users * login_user(struct users * head){
+    struct users * tmp;
+    struct posts * p; // head of posts
+    p=NULL;
+    struct posts * ptemp,*ptemp1;  // temporary of posts struct
+    ptemp=p;
+    ptemp1=p;
+    char user[20];
+    char pass[20];
+    tmp=head;
+    puts("Enter Username");
+    scanf("%s",&user);
+    puts("Enter password");
+    scanf("%s",&pass);
+    int choice;
+       while(tmp!=NULL){
+            if(strcmp(user,tmp->username)==0  )
+            {    if(strcmp(pass,tmp->password)==0)   //found user in LL
+              {
+                puts("found user");
+                  do{
+                      puts("\n Enter 1 to check all posts \n Enter 2 to add a post \n Enter 3 to logout. ");
+                      scanf("%d",&choice);
+                      switch (choice) {
+                        case 1: if(p!=NULL){
+                                    while(ptemp!=NULL){
+                                        printf("%s : \n ",ptemp->userName);
+                                        printf("%s",ptemp->post);
+                                        ptemp=ptemp->next;
+                                    }
+                                 }
+                                break;
+                        case 2: if(p==NULL)
+                                    {
+                                      p=create_post();
+                                      puts("Enter Your Post..");
+                                      scanf("%s",p->post);
+                                    }
+                                    else{
+                                      while(ptemp1->next!=NULL)
+                                          ptemp1=ptemp1->next;
+                                      puts("Enter Your Post..");
+                                      scanf("%s",ptemp1->post);
+                                    }
+                                break;
+                        case 3:
+                                puts("Logging outt.....");
+                                break;
+                        default: puts("Invalid choice??");
+                      }
+                  }while(choice!=3);
+              }}else{
+                puts("Invalid Username Or Password");
+              }
+            tmp=tmp->next;
+     }
+ return head;
+}
+
+void print(struct users * head)                          //print entire linkedlist:temporaray for debugging
+{
+struct users *tmp;
+tmp=head;
+while(tmp->next!=NULL)
+{
+printf("%s \t",tmp->username);
+tmp=tmp->next;
+}
+printf("%s \t",tmp->username);
+}
 
 void main(){
-    int ch;
-    struct data *head=NULL;
-    printf("Welcome to HV's Social Media App.\n");
-    while(ch != 5){
-        printf("Enter Your Choice\n1:Register\n2:AdminPanel\n5:Exit\n");
-    scanf("%d",&ch);
-        switch (ch){
-        case 1:
-            head=insert(head);
-            break;
-        case 2:
-            adminDisplay(head);
-            break;
-//        case 3:
-//            login(head);
-//            break;
-        case 5:
-            printf("Thank you for Using Us.....Have a Nice Day;-)\n");
-            exit(0);
-            break;
-        default:
-            printf("Select Proper Choice");
+    struct users * head;
+    head=NULL;
+    int choice;
+    do{ puts("\n HV's Social Media App");
+        puts("\n Enter 1 to Register \n Enter 2 to Login \n Enter 3 for Admin Login \n Enter 4 to Exit \n enter 5 t print");
+        scanf("%d",&choice);
+
+        switch (choice){
+          case 1:head=register_user(head);
+                  break;
+          case 2:head=login_user(head);
+                  break;
+          case 3:head=admin_login(head);
+                  break;
+          case 4:
+                  puts("Goodbye.");
+                  break;
+          case 5:print(head);               //temporary case for debugging.
+                  break;
+          default:
+                  puts("Invalid Choice.");
         }
-    }
+    }while(choice!=4);
 }
